@@ -1,4 +1,6 @@
 import React from 'react';
+import VideoTitle from './VideoTitle';
+import Notes from './Notes';
 
 interface VideoPlayerProps {
     videoId: string;
@@ -19,6 +21,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
                 title="Embedded youtube video"
                 className='rounded-md w-full h-[70vh]'
             />
+
+            <VideoTitle title="Video title goes here" description="This is the description of the video" />
+            <div className="border border-gray-200 rounded-xl p-6">
+                <Notes timestamp="01 min 30 sec" />
+            </div>
         </div>
     );
 };

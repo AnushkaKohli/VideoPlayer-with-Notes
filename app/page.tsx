@@ -1,6 +1,4 @@
-import Notes from "@/components/Notes";
 import VideoPlayer from "@/components/VideoPlayer";
-import VideoTitle from "@/components/VideoTitle";
 
 export default function Home () {
   return (
@@ -8,15 +6,7 @@ export default function Home () {
       <h1 className="w-full font-semibold text-xl pb-4">
         Video Player with Notes
       </h1>
-      <VideoPlayer videoId="" />
-      <VideoTitle title="Video title goes here" description="This is the description of the video" />
-      <div className="border border-gray-200 rounded-xl p-6">
-        <Notes notes={[{
-          timestamp: new Date().getTime(),
-          createdAt: new Date(),
-          content: "This is my first note.",
-        }]} />
-      </div>
+      <VideoPlayer videoId="OjEg0IBR_ak?si=2zZIbs66uAcfu044" />
     </div>
   );
 }
