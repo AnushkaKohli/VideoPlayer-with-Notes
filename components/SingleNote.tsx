@@ -3,14 +3,14 @@
 import React from 'react';
 import Button from './Button';
 
-interface SingleNoteProps {
+interface SingleNote {
     timestamp: number;
     createdAt: Date;
     content: string;
     image?: string;
 }
 
-const SingleNote: React.FC<SingleNoteProps> = ({ timestamp, createdAt, content, image }) => {
+const SingleNote: React.FC<SingleNote> = ({ timestamp, createdAt, content, image }) => {
 
     function formatDate (date: Date) {
         const day = date.getDate().toString().padStart(2, '0');
