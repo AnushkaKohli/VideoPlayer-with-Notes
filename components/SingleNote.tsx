@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Button from './Button';
 
 interface SingleNote {
-    timestamp: number;
+    timestamp: string;
     createdAt: Date;
     content: string;
     image?: string;
@@ -34,10 +34,10 @@ const SingleNote: React.FC<SingleNote> = ({ timestamp, createdAt, content, image
             <div className='flex gap-1' onClick={handleClick}>
                 Timestamp:
                 <p className='text-violet-700'>
-                    01 min 30 sec
+                    {timestamp}
                 </p>
             </div>
-            {image && <Image src={image} alt="Note attachment" width={200} height={200} />}
+            {image && <Image src={image} alt="Note attachment" width={200} height={200} className='py-2' />}
             <p className='border border-gray-200 rounded-md my-4 p-2'>{content}</p>
             <div className='flex justify-end'>
                 <Button onClick={handleDelete} text='Delete note' />

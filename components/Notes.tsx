@@ -7,62 +7,56 @@ import SingleNote from './SingleNote';
 
 interface NotesProps {
     timestamp: string;
+    videoId: string;
 }
 
 interface Note {
     id: string;
-    timestamp: number;
+    timestamp: string;
     createdAt: Date;
     content: string;
     image?: string;
 }
 
-const Notes: React.FC<NotesProps> = ({ timestamp }) => {
+const Notes: React.FC<NotesProps> = ({ timestamp, videoId }) => {
     const [notes, setNotes] = useState<Note[]>([]);
-    const [toggleInitialData, setToggleInitialData] = useState<boolean>(false);
     const [isNewNote, setIsNewNote] = useState<boolean>(false);
     const [noteContent, setNoteContent] = useState<string>('');
     const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File>();
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && window.localStorage) {
-            if (localStorage.getItem("appData") === null) {
-                localStorage.setItem(
-                    "appData",
-                    JSON.stringify({
-                        notes: [
-                            {
-                                id: uuidv4(),
-                                timestamp: new Date().getTime(),
-                                createdAt: new Date(),
-                                content: "This is my first note.",
-                            },
-                        ],
-                    })
-                );
-            }
-            setNotes(JSON.parse(localStorage.getItem("appData") ?? '').notes);
-        }
-    }, [toggleInitialData]);
-
-    useEffect(() => {
-        let appData = JSON.parse(localStorage.getItem("appData") ?? '');
+        let appData = JSON.parse(localStorage.getItem(`appData-${videoId}`) ?? '{}');
         let updatedData = (appData = { ...appData, notes: notes });
-        localStorage.setItem("appData", JSON.stringify(updatedData));
-    }, [notes]);
+        localStorage.setItem(`appData-${videoId}`, JSON.stringify(updatedData));
+    }, [notes, videoId]);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            setSelectedFile(event.target.files[0]);
+        }
+    };
 
     const handleDelete = (idToDelete: string) => {
         const updatedNotes = notes.filter((note: Note) => note.id !== idToDelete);
         setNotes(updatedNotes);
-        let appData = JSON.parse(localStorage.getItem("appData") ?? '');
+        let appData = JSON.parse(localStorage.getItem(`appData-${videoId}`) ?? '');
         appData.notes = appData.notes.filter((note: Note) => note.id !== idToDelete);
-        localStorage.setItem("appData", JSON.stringify(appData));
-        setToggleInitialData(prevState => !prevState);
+        localStorage.setItem(`appData-${videoId}`, JSON.stringify(appData));
     }
 
     const handleEdit = (idToEdit: string) => {
-        // Edit note
         setEditingNoteId(idToEdit);
+    }
+
+    const handleEditButton = () => {
+        const updatedNote = {
+            ...notes.find(note => note.id === editingNoteId),
+            content: noteContent,
+            image: selectedFile ? URL.createObjectURL(selectedFile) : undefined,
+        };
+        setNotes(notes.map(note => note.id === editingNoteId ? updatedNote : note) as Note[]);
+        setEditingNoteId(null);
     }
 
     const handleAddNote = () => {
@@ -72,12 +66,14 @@ const Notes: React.FC<NotesProps> = ({ timestamp }) => {
     const handleSave = () => {
         const newNote = {
             id: uuidv4(),
-            timestamp: new Date().getTime(),
+            timestamp: timestamp,
             createdAt: new Date(),
             content: noteContent,
+            image: selectedFile ? URL.createObjectURL(selectedFile) : undefined,
         };
         setNotes([...notes, newNote]);
         setIsNewNote(false);
+        setSelectedFile(undefined);
     }
 
     return (
@@ -98,7 +94,7 @@ const Notes: React.FC<NotesProps> = ({ timestamp }) => {
                         <form>
                             <input type='text' onChange={(e) => setNoteContent(e.target.value)} className='border border-gray-200 rounded-md w-full p-2' placeholder='Enter your note here'></input>
                             <div className='flex gap-2 justify-between pt-2'>
-                                <input type='file' className='mt-2' />
+                                <input type='file' onChange={handleFileChange} className='mt-2' />
                                 <button onClick={handleSave} type='submit' className='bg-violet-600 text-white rounded-md p-2 mt-2'>Save note</button>
                             </div>
                         </form>
@@ -123,23 +119,15 @@ const Notes: React.FC<NotesProps> = ({ timestamp }) => {
                                     <form>
                                         <input
                                             type='text'
-                                            value={noteContent}
+                                            value={note.content}
                                             onChange={(e) => setNoteContent(e.target.value)}
                                             className='border border-gray-200 rounded-md w-full p-2'
                                             placeholder='Edit your note here'
                                         ></input>
                                         <div className='flex gap-2 justify-between pt-2'>
-                                            <input type='file' className='mt-2' />
+                                            <input type='file' onChange={handleFileChange} className='mt-2' />
                                             <button
-                                                onClick={() => {
-                                                    // Save the edited note
-                                                    const updatedNote = {
-                                                        ...notes.find(note => note.id === editingNoteId),
-                                                        content: noteContent,
-                                                    };
-                                                    setNotes(notes.map(note => note.id === editingNoteId ? updatedNote : note) as Note[]);
-                                                    setEditingNoteId(null); // Reset editing mode
-                                                }}
+                                                onClick={handleEditButton}
                                                 type='submit'
                                                 className='bg-violet-600 text-white rounded-md p-2 mt-2'
                                             >

@@ -1,6 +1,11 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
+import YouTube, { YouTubeProps } from 'react-youtube';
 import VideoTitle from './VideoTitle';
 import Notes from './Notes';
+import { format } from 'path';
+import { time } from 'console';
 
 interface VideoPlayerProps {
     videoId: string;
@@ -8,23 +13,66 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
     const youtubeUrl = `https://www.youtube.com/embed/${videoId}`;
+    const [timestamp, setTimestamp] = useState<string | number | undefined>(0);
+    const [player, setPlayer] = useState<any>(null);
+
+    const onPlayerReady: YouTubeProps['onReady'] = (event) => {
+        // access to player in all event handlers via event.target
+        setPlayer(event.target);
+        console.log('Player is ready');
+    };
+
+    const opts: YouTubeProps['opts'] = {
+        playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 1,
+        },
+    };
+
+    const onPlayerStateChange: YouTubeProps['onStateChange'] = (event) => {
+        console.log('Player state is:', event.data);
+        setTimestamp(getCurrentTime());
+        console.log('Timestamp:', timestamp);
+    };
+
+    const getCurrentTime = () => {
+        if (player) {
+            const currentTime = player.getCurrentTime();
+            const formattedTime = convertSecondsToTimeString(currentTime);
+            return formattedTime;
+        } else {
+            console.log('Player not ready yet');
+        }
+    };
+
+    function convertSecondsToTimeString (timestamp: number) {
+        if (isNaN(timestamp) || timestamp < 0) {
+            return 'Invalid time';
+        }
+
+        const minutes = Math.floor(timestamp / 60);
+        const seconds = Math.floor(timestamp % 60);
+
+        const minutesStr = minutes.toString().padStart(2, '0');
+        const secondsStr = seconds.toString().padStart(2, '0');
+
+        return `${minutesStr} min ${secondsStr} sec`;
+    }
+
 
     return (
         <div className="video-player">
-            <iframe
-                // width="853"
-                // height="480"
-                src={youtubeUrl}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title="Embedded youtube video"
-                className='rounded-md w-full h-[70vh]'
+            <YouTube
+                videoId={videoId}
+                iframeClassName='rounded-md w-full h-[70vh]'
+                opts={opts}
+                onReady={onPlayerReady}
+                onStateChange={onPlayerStateChange}
             />
 
             <VideoTitle title="Video title goes here" description="This is the description of the video" />
             <div className="border border-gray-200 rounded-xl p-6">
-                <Notes timestamp="01 min 30 sec" />
+                <Notes timestamp={timestamp as string} videoId={videoId} />
             </div>
         </div>
     );
