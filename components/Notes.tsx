@@ -8,6 +8,7 @@ import SingleNote from './SingleNote';
 interface NotesProps {
     timestamp: string;
     videoId: string;
+    player?: any;
 }
 
 interface Note {
@@ -18,7 +19,7 @@ interface Note {
     image?: string;
 }
 
-const Notes: React.FC<NotesProps> = ({ timestamp, videoId }) => {
+const Notes: React.FC<NotesProps> = ({ timestamp, videoId, player }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [isNewNote, setIsNewNote] = useState<boolean>(false);
     const [noteContent, setNoteContent] = useState<string>('');
@@ -110,6 +111,7 @@ const Notes: React.FC<NotesProps> = ({ timestamp, videoId }) => {
                             timestamp={note.timestamp}
                             content={note.content}
                             image={note.image}
+                            player={player}
                             handleDelete={() => handleDelete(note.id)}
                             handleEdit={() => handleEdit(note.id)}
                         />

@@ -68,11 +68,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
                 opts={opts}
                 onReady={onPlayerReady}
                 onStateChange={onPlayerStateChange}
+                onPause={onPlayerStateChange}
             />
 
             <VideoTitle title="Video title goes here" description="This is the description of the video" />
             <div className="border border-gray-200 rounded-xl p-6">
-                <Notes timestamp={timestamp as string} videoId={videoId} />
+                <Notes timestamp={timestamp as string} videoId={videoId} player={player} />
             </div>
         </div>
     );

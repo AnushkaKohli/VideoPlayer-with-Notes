@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Button from './Button';
 
@@ -9,11 +9,12 @@ interface SingleNote {
     createdAt: Date;
     content: string;
     image?: string;
+    player?: any;
     handleDelete: () => void;
     handleEdit: () => void;
 }
 
-const SingleNote: React.FC<SingleNote> = ({ timestamp, createdAt, content, image, handleDelete, handleEdit }) => {
+const SingleNote: React.FC<SingleNote> = ({ timestamp, createdAt, content, image, player, handleDelete, handleEdit }) => {
 
     function formatDate (date: Date) {
         const day = new Date().getDate().toString().padStart(2, '0');
@@ -23,15 +24,21 @@ const SingleNote: React.FC<SingleNote> = ({ timestamp, createdAt, content, image
         return `${day} ${month} ’${year}`;
     }
 
+    function convertTimestampToSeconds (timestamp: string) {
+        const [minutes, seconds] = timestamp.split(' min ');
+        console.log(minutes, seconds, 'minutes, seconds')
+        return parseInt(minutes) * 60 + parseInt(seconds);
+    }
 
     const handleClick = () => {
-        // Seek video to the timestamp
+        const timestampInSeconds = convertTimestampToSeconds(timestamp);
+        player.seekTo(timestampInSeconds, true);
     };
 
     return (
         <div className="note text-gray-600">
             <p className='font-medium'>{formatDate(createdAt)}</p>
-            <div className='flex gap-1' onClick={handleClick}>
+            <div className='flex gap-1 hover:cursor-pointer' onClick={handleClick}>
                 Timestamp:
                 <p className='text-violet-700'>
                     {timestamp}
