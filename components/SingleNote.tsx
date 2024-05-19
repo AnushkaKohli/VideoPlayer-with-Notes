@@ -25,13 +25,15 @@ const SingleNote: React.FC<SingleNote> = ({ timestamp, createdAt, content, image
     }
 
     function convertTimestampToSeconds (timestamp: string) {
-        const [minutes, seconds] = timestamp.split(' min ');
-        console.log(minutes, seconds, 'minutes, seconds')
-        return parseInt(minutes) * 60 + parseInt(seconds);
+        const [hours, rest] = timestamp.split(' hrs ');
+        const [minutes, seconds] = rest.split(' min ');
+        const totalSeconds = parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds);
+        return totalSeconds;
     }
 
     const handleClick = () => {
         const timestampInSeconds = convertTimestampToSeconds(timestamp);
+        console.log("Timestamp in seconds:", timestampInSeconds)
         player.seekTo(timestampInSeconds, true);
     };
 

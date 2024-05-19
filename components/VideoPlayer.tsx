@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import VideoTitle from './VideoTitle';
 import Notes from './Notes';
-import { format } from 'path';
-import { time } from 'console';
 
 interface VideoPlayerProps {
     videoId: string;
@@ -50,13 +48,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
             return 'Invalid time';
         }
 
-        const minutes = Math.floor(timestamp / 60);
-        const seconds = Math.floor(timestamp % 60);
+        const hours = Math.floor(timestamp / 3600);
+        const remainingSeconds = Math.floor(timestamp % 3600);
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = Math.floor(remainingSeconds % 60);
 
+        const hoursStr = hours.toString().padStart(2, '0');
         const minutesStr = minutes.toString().padStart(2, '0');
         const secondsStr = seconds.toString().padStart(2, '0');
 
-        return `${minutesStr} min ${secondsStr} sec`;
+        return `${hoursStr} hrs ${minutesStr} min ${secondsStr} sec`;
     }
 
 
